@@ -117,7 +117,7 @@ class TeagorExtractor:
         self.get_envelop()
         print('Area ...')
         self.get_area()
-        print(f'Area feature size: {self.area.shape}. Area feature: {self.area}')
+        print(f'Area feature size: {self.area.shape}')
 
         return self.area
 
@@ -127,14 +127,11 @@ class TeagorExtractor:
         q_u = np.zeros(s.shape)
         q_l = np.zeros(s.shape)
 
-        u_x = [0, ]  # 上包络的x序列
-        u_y = [s[0], ]  # 上包络的y序列
+        u_x = [0, ] 
+        u_y = [s[0], ]  
 
-        l_x = [0, ]  # 下包络的x序列
-        l_y = [s[0], ]  # 下包络的y序列
-
-    # 检测波峰和波谷，并分别标记它们在u_x,u_y,l_x,l_中的位置。
-    # Detect peaks and troughs and mark their location in u_x,u_y,l_x,l_y respectively.
+        l_x = [0, ] 
+        l_y = [s[0], ]
 
         for k in range(1, len(s) - 1):
             if (sign(s[k] - s[k - 1]) == 1) and (sign(s[k] - s[k + 1]) == 1):
@@ -145,24 +142,22 @@ class TeagorExtractor:
                 l_x.append(k)
                 l_y.append(s[k])
 
-        u_x.append(len(s) - 1)  # 上包络与原始数据切点x
-        u_y.append(s[-1])  # 对应的值
+        u_x.append(len(s) - 1)
+        u_y.append(s[-1])  
 
-        l_x.append(len(s) - 1)  # 下包络与原始数据切点x
-        l_y.append(s[-1])  # 对应的值
+        l_x.append(len(s) - 1)
+        l_y.append(s[-1])  
 
-        # u_x,l_y是不连续的，以下代码把包络转为和输入数据相同大小的数组[便于后续处理，如滤波]
         upper_envelope_y = np.zeros(len(signal))
         lower_envelope_y = np.zeros(len(signal))
 
-        upper_envelope_y[0] = u_y[0]  # 边界值处理
+        upper_envelope_y[0] = u_y[0]
         upper_envelope_y[-1] = u_y[-1]
-        lower_envelope_y[0] = l_y[0]  # 边界值处理
+        lower_envelope_y[0] = l_y[0]  
         lower_envelope_y[-1] = l_y[-1]
 
-        # 上包络
         last_idx, next_idx = 0, 0
-        k, b = self.general_equation(u_x[0], u_y[0], u_x[1], u_y[1])  # 初始的k,b
+        k, b = self.general_equation(u_x[0], u_y[0], u_x[1], u_y[1])
         for e in range(1, len(upper_envelope_y) - 1):
             if e not in u_x:
                 v = k * e + b
@@ -172,12 +167,10 @@ class TeagorExtractor:
                 upper_envelope_y[e] = u_y[idx]
                 last_idx = u_x.index(e)
                 next_idx = u_x.index(e) + 1
-                # 求连续两个点之间的直线方程
                 k, b = self.general_equation(u_x[last_idx], u_y[last_idx], u_x[next_idx], u_y[next_idx])
 
-            # 下包络
         last_idx, next_idx = 0, 0
-        k, b = self.general_equation(l_x[0], l_y[0], l_x[1], l_y[1])  # 初始的k,b
+        k, b = self.general_equation(l_x[0], l_y[0], l_x[1], l_y[1])
         for e in range(1, len(lower_envelope_y) - 1):
 
             if e not in l_x:
@@ -188,14 +181,12 @@ class TeagorExtractor:
                 lower_envelope_y[e] = l_y[idx]
                 last_idx = l_x.index(e)
                 next_idx = l_x.index(e) + 1
-                # 求连续两个切点之间的直线方程
                 k, b = self.general_equation(l_x[last_idx], l_y[last_idx], l_x[next_idx], l_y[next_idx])
 
         return upper_envelope_y, lower_envelope_y
 
 
     def general_equation(self, first_x, first_y, second_x, second_y):
-        # 斜截式 y = kx + b
         A = second_y - first_y
         B = first_x - second_x
         C = second_x * first_y - first_x * second_y
@@ -206,5 +197,5 @@ class TeagorExtractor:
 
 if __name__ == "__main__":
     t = TeagorExtractor()
-    teo_cb_auto_env = t.process("/project/graziul/data/Zone1/2018_12_28/201812281230-119004-27730.mp3"))
+    teo_cb_auto_env = t.process("/project/graziul/data/Zone1/2018_12_28/201812281230-119004-27730.mp3")
     print(teo_cb_auto_env)
