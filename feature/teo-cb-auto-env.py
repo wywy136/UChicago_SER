@@ -6,6 +6,7 @@ import numpy as np
 from numpy import sign, trapz
 from teager_py import Teager
 import statsmodels.api as sm
+import wave
 
 
 class TeagorExtractor:
@@ -47,13 +48,14 @@ class TeagorExtractor:
 
     def trans_mp3_to_wav(self, filepath, wav_filepath):
         song = pydub.AudioSegment.from_mp3(filepath)
-        song.export(wav_filepath, format="wav")
+        # song.export(wav_filepath, format="wav")
         self.audio_data = np.array(song.get_array_of_samples()).astype(np.int64)
 
 
     def get_sampling_rate(self, filepath):
-        audio = MP3(filepath)
-        return audio.info.sample_rate
+        # f = wave.open(filepath)
+        # sample_rate = f.getframerate()
+        return 22050
 
 
     def get_max_frequency(self, wav_filepath, sampling_rate):
@@ -99,25 +101,25 @@ class TeagorExtractor:
 
 
     def process(self, filepath):
-        wav_filepath = './201812281230-119004-27730' + '.wav'
+        wav_filepath = filepath
         self.trans_mp3_to_wav(filepath, wav_filepath)
         self.sampling_rate = self.get_sampling_rate(filepath)
         # print(self.sampling_rate)
         self.max_frequency = self.get_max_frequency(filepath, self.sampling_rate)
         # print(self.max_frequency)
         self.cb_filter()
-        print('Teo feature ...')
+        # print('Teo feature ...')
         self.get_teo_feature()
-        print(f'Teo feature size: {self.teo_feature.shape}')
+        # print(f'Teo feature size: {self.teo_feature.shape}')
         # print(self.teo_feature.shape)
-        print('Acf feature ...')
+        # print('Acf feature ...')
         self.get_acf_feature()
-        print(f'Acf feature size: {self.acf_feature.shape}')
-        print('Envelope ...')
+        # print(f'Acf feature size: {self.acf_feature.shape}')
+        # print('Envelope ...')
         self.get_envelop()
-        print('Area ...')
+        # print('Area ...')
         self.get_area()
-        print(f'Area feature size: {self.area.shape}')
+        # print(f'Area feature size: {self.area.shape}')
 
         return self.area
 
@@ -197,5 +199,5 @@ class TeagorExtractor:
 
 if __name__ == "__main__":
     t = TeagorExtractor()
-    teo_cb_auto_env = t.process("/project/graziul/data/Zone1/2018_12_28/201812281230-119004-27730.mp3")
-    print(teo_cb_auto_env)
+    teo_cb_auto_env = t.process("/project/graziul/ra/team_ser/data/Zone1/2018_08_12/201808120932-28710-27730/201808120932-28710-27730-000221252.wav")
+    # print(teo_cb_auto_env)
