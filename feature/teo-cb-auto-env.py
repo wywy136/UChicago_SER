@@ -12,10 +12,12 @@ import wave
 class TeagorExtractor:
     def __init__(self):
         self.audio_data = None
+        self.audio_data_all = None
         self.filted_data = []
         self.sampling_rate = 0
         self.max_frequency = 0.
         self.num_filter = 16
+        self.delta = 0.
         self.teo_feature = None
         self.acf_feature = []
         self.envelope = []
@@ -38,31 +40,40 @@ class TeagorExtractor:
             [2700, 3150],
             [3150, 3700]
         ]
+        self.all_features = []
 
 
+    def clear_data(self):
+        self.filted_data = []
+        self.acf_feature = []
+        self.envelope = []
+        self.area = []
+
+    
     def get_teo_feature(self):
         self.teo_feature = Teager(self.filted_data, 'horizontal', 1)
         if self.teo_feature is None:
             raise AssertionError
 
 
-    def trans_mp3_to_wav(self, filepath, wav_filepath):
-        song = pydub.AudioSegment.from_mp3(filepath)
-        # song.export(wav_filepath, format="wav")
-        self.audio_data = np.array(song.get_array_of_samples()).astype(np.int64)
+    def split_wav(self, filepath, wav_filepath):
+        song = pydub.AudioSegment.from_wav(filepath)
+        duration = song.duration_seconds * 1000
+        length = 0
+        self.audio_data_all = []
+        while length + int(self.delta * 1000) <= duration:
+            song_piece = song[length:length + int(self.delta * 1000)]
+            self.audio_data_all.append(np.array(song_piece.get_array_of_samples()).astype(np.int64))
+            length += int(self.delta * 1000)
 
-
-    def get_sampling_rate(self, filepath):
-        # f = wave.open(filepath)
-        # sample_rate = f.getframerate()
+    @staticmethod
+    def get_sampling_rate():
         return 22050
 
-
-    def get_max_frequency(self, wav_filepath, sampling_rate):
+    @staticmethod
+    def get_max_frequency(wav_filepath, sampling_rate):
         wav_data, _ = librosa.load(wav_filepath, sr=sampling_rate)
-        # print(type(wav_data))
         frequencies, times, spectrogram = signal.spectrogram(wav_data, sampling_rate)
-        # print(type(frequencies))
         return max(frequencies)
 
 
@@ -74,17 +85,15 @@ class TeagorExtractor:
         self.filted_data = np.array(self.filted_data)
         if self.filted_data.shape != (self.num_filter, len(self.audio_data)):
             raise AssertionError
-        # print(self.filted_data.shape)
 
     
     def get_acf_feature(self):
         for i in range(self.num_filter):
             self.acf_feature.append(sm.tsa.stattools.acf(self.teo_feature[i]))
         self.acf_feature = np.array(self.acf_feature)
-        # print(self.acf_feature.shape)
 
     
-    def get_envelop(self):
+    def get_envelope(self):
         for i in range(self.num_filter):
             y_upper, y_lower = self.envelope_extraction(self.acf_feature[i])
             self.envelope.append([y_upper, y_lower])
@@ -92,36 +101,29 @@ class TeagorExtractor:
 
     def get_area(self):
         for i in range(self.num_filter):
-            area = []
-            for j in range(2):
-                area.append(trapz(self.envelope[i][j]))
-            self.area.append(area)
+            self.area.append(trapz(self.envelope[i][0]))
         self.area = np.array(self.area)
         # print()
 
 
-    def process(self, filepath):
+    def process(self, filepath, delta):
+        self.delta = delta
         wav_filepath = filepath
-        self.trans_mp3_to_wav(filepath, wav_filepath)
-        self.sampling_rate = self.get_sampling_rate(filepath)
-        # print(self.sampling_rate)
+        self.split_wav(filepath, wav_filepath)
+        self.sampling_rate = self.get_sampling_rate()
         self.max_frequency = self.get_max_frequency(filepath, self.sampling_rate)
-        # print(self.max_frequency)
-        self.cb_filter()
-        # print('Teo feature ...')
-        self.get_teo_feature()
-        # print(f'Teo feature size: {self.teo_feature.shape}')
-        # print(self.teo_feature.shape)
-        # print('Acf feature ...')
-        self.get_acf_feature()
-        # print(f'Acf feature size: {self.acf_feature.shape}')
-        # print('Envelope ...')
-        self.get_envelop()
-        # print('Area ...')
-        self.get_area()
-        # print(f'Area feature size: {self.area.shape}')
+        
+        for audio in self.audio_data_all:
+            self.audio_data = audio
+            self.clear_data()
+            self.cb_filter()
+            self.get_teo_feature()
+            self.get_acf_feature()
+            self.get_envelope()
+            self.get_area()
+            self.all_features.append(self.area)
 
-        return self.area
+        return np.array(self.all_features)
 
 
     def envelope_extraction(self, signal):
@@ -199,5 +201,5 @@ class TeagorExtractor:
 
 if __name__ == "__main__":
     t = TeagorExtractor()
-    teo_cb_auto_env = t.process("/project/graziul/ra/team_ser/data/Zone1/2018_08_12/201808120932-28710-27730/201808120932-28710-27730-000221252.wav")
-    # print(teo_cb_auto_env)
+    teo_cb_auto_env = t.process("/project/graziul/ra/team_ser/data/Zone1/2018_08_12/201808120932-28710-27730/201808120932-28710-27730-000221252.wav", 1)
+    print(teo_cb_auto_env)
