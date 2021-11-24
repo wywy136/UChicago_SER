@@ -1,0 +1,6 @@
+Computing TEO Features ...
+0 in 555
+Input features size: (555, 16)
+Output labels size: (555,)
+Aggregated feature size: (14, 4)
+Clustering score: 2.0789312253533496
