@@ -117,8 +117,8 @@ class TeagorExtractor:
         print("Computing TEO Features ...")
         nums = len(self.audio_data_all)
         for i, audio in enumerate(self.audio_data_all):
-            if i % 1000 == 0:
-                print(f"{i} in {nums}")
+            if i % 5000 == 0:
+                print(i, nums)
             self.audio_data = audio
             self.clear_data()
             self.cb_filter()

@@ -1,0 +1,19 @@
+Kmeans Clustering number: 2
+Traceback (most recent call last):
+  File "kmeans.py", line 91, in <module>
+    labels = km.get_clustering_labels("/project/graziul/ra/team_ser/data/zone1-20180814.wav", 2)
+  File "kmeans.py", line 82, in get_clustering_labels
+    self.get_clustering_features(filepath, delta)
+  File "kmeans.py", line 65, in get_clustering_features
+    teo_features: np.array = self.teo.process(filepath, delta)
+  File "/home/ywang27/UChicago_SER/cluster/../feature/teo_cb_auto_env.py", line 114, in process
+    self.split_wav(filepath, wav_filepath)
+  File "/home/ywang27/UChicago_SER/cluster/../feature/teo_cb_auto_env.py", line 60, in split_wav
+    song = pydub.AudioSegment.from_wav(filepath)
+  File "/home/ywang27/.local/lib/python3.8/site-packages/pydub/audio_segment.py", line 808, in from_wav
+    return cls.from_file(file, 'wav', parameters=parameters)
+  File "/home/ywang27/.local/lib/python3.8/site-packages/pydub/audio_segment.py", line 651, in from_file
+    file, close_file = _fd_or_path_or_tempfile(file, 'rb', tempfile=False)
+  File "/home/ywang27/.local/lib/python3.8/site-packages/pydub/utils.py", line 60, in _fd_or_path_or_tempfile
+    fd = open(fd, mode=mode)
+FileNotFoundError: [Errno 2] No such file or directory: '/project/graziul/ra/team_ser/data/zone1-20180814.wav'

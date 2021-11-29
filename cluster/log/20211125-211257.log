@@ -1,0 +1,17 @@
+Kmeans Clustering number: 5
+Computing TEO Features ...
+0 43052
+5000 43052
+10000 43052
+15000 43052
+20000 43052
+25000 43052
+30000 43052
+35000 43052
+40000 43052
+Input features size: (43052, 16)
+Output labels size: (43052,)
+Clustering interval: 2
+Num of clusters: 5
+Aggregated feature size: (24, 5)
+Clustering score: 1.1820315607455676

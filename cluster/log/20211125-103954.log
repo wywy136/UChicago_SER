@@ -1,0 +1,20 @@
+DBSCAN Clustering eps: 0.0001, min_samples: 1000
+Clustering interval: 1
+Computing TEO Features ...
+0 555
+Input features size: (555, 16)
+Output labels size: (555,)
+Num of clusters: 1
+Aggregated feature size: (14, 1)
+Traceback (most recent call last):
+  File "dbscan.py", line 26, in <module>
+    score = db.evaluate()
+  File "/home/ywang27/UChicago_SER/cluster/kmeans.py", line 52, in evaluate
+    self.score = self.evaluator.dbi(self.features, self.labels)
+  File "/home/ywang27/UChicago_SER/cluster/cluster_evaluator.py", line 14, in dbi
+    return davies_bouldin_score(X, labels)
+  File "/home/ywang27/.conda/envs/ywang27/lib/python3.8/site-packages/sklearn/metrics/cluster/_unsupervised.py", line 346, in davies_bouldin_score
+    check_number_of_labels(n_labels, n_samples)
+  File "/home/ywang27/.conda/envs/ywang27/lib/python3.8/site-packages/sklearn/metrics/cluster/_unsupervised.py", line 33, in check_number_of_labels
+    raise ValueError(
+ValueError: Number of labels is 1. Valid values are 2 to n_samples - 1 (inclusive)
