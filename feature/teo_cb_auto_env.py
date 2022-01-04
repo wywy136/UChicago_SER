@@ -57,8 +57,11 @@ class TeagorExtractor:
 
 
     def split_wav(self, filepath, wav_filepath):
-        song = pydub.AudioSegment.from_wav(filepath)
+        song = pydub.AudioSegment.from_mp3(filepath)
+        print(type(song))
         duration = song.duration_seconds * 1000
+        # song = np.array(song.get_array_of_samples())
+        
         # print(f"Wav file length: {duration}")
         length = 0
         self.audio_data_all = []

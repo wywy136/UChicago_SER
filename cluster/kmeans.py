@@ -73,16 +73,17 @@ class ClusterTeo:
 
 class KMeansClusterTeo(ClusterTeo):
 	def __init__(self, k, random_state):
-		ClusterTeo.__init__(self)
-		self.k = k
-		self.random_state = random_state
-		self.kmeans = KMeans(n_clusters = self.k, random_state = self.random_state)
+	    ClusterTeo.__init__(self)
+	    self.k = k
+	    self.random_state = random_state
+	    self.kmeans = KMeans(n_clusters = self.k, random_state = self.random_state)
 
 	def get_clustering_labels(self, filepath, delta):
-		self.get_clustering_features(filepath, delta)
-		self.labels = self.kmeans.fit_predict(self.features)
-		print(f"Output labels size: {self.labels.shape}")
-		return self.labels
+            self.get_clustering_features(filepath, delta)
+            # print(f"Feature size: {self.features.shape}")
+            self.labels = self.kmeans.fit_predict(self.features)
+            print(f"Output labels size: {self.labels.shape}")
+            return self.labels
 
 
 if __name__ == "__main__":
